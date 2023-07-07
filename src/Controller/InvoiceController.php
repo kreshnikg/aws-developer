@@ -4,24 +4,43 @@ namespace App\Controller;
 
 use App\Entity\Invoice;
 use App\Repository\InvoiceRepository;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Serializer\SerializerInterface;
 
 class InvoiceController extends AbstractController
 {
-    #[Route('/invoices')]
-    public function index(InvoiceRepository $invoiceRepository): JsonResponse
+    public function __construct(
+        private readonly SerializerInterface $serializer
+    ) {
+    }
+
+    #[Route('/invoices', methods: ['GET'])]
+    public function index(InvoiceRepository $invoiceRepository): Response
     {
+        $invoices = $invoiceRepository->findAll();
+
+        $data = $this->serializer->serialize($invoices, 'json');
+
+        return new JsonResponse($data, json: true);
+    }
+
+    #[Route('/invoices', methods: ['POST'])]
+    public function save(Request $request, InvoiceRepository $invoiceRepository): JsonResponse
+    {
+        $data = $request->toArray();
+
         $invoice = new Invoice();
-        $invoice->setClient('Klienti');
-        $invoice->setAmount(100);
+        $invoice->setClient($data['client']);
+        $invoice->setAmount($data['amount']);
 
         $invoiceRepository->save($invoice, true);
 
-        return new JsonResponse(['success. Invoice ID: ' . $invoice->getId()]);
+        $data = $this->serializer->serialize($invoice, 'json');
+
+        return new JsonResponse($data, json: true);
     }
-
-
 }
