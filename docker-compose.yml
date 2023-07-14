@@ -15,5 +15,17 @@ services:
         ports:
             - "${DB_PORT:-5432}:5432"
 
+    frontend:
+        build:
+            context: ./
+            dockerfile: Dockerfile-frontend
+        image: frontend
+        volumes:
+            - type: bind
+              source: ./frontend/
+              target: /react-app
+        ports:
+            - "3000:3000"
+
 volumes:
     db-data:
