@@ -10,7 +10,7 @@ function CreateInvoice() {
     const createInvoice = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
 
-        axios.post('/invoices', {
+        axios.post('http://localhost/invoices', {
             client: clientInput.current?.value,
             amount: amountInput.current?.value
         }).then((response) => {

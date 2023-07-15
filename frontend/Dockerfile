@@ -2,10 +2,13 @@
 FROM node:alpine
 
 # Setting up the work directory
-WORKDIR /react-app
+WORKDIR /app
+
+COPY package.json ./
+COPY package-lock.json ./
 
 # Installing dependencies
-RUN #npm install
+RUN npm install
 
 # Starting our application
 CMD npm start

@@ -13,7 +13,7 @@ function Invoices() {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
 
     const getInvoices = () => {
-        axios.get('/invoices')
+        axios.get('http://localhost/invoices')
             .then((response) => {
                 setInvoices(response.data)
             }).catch((error) => {

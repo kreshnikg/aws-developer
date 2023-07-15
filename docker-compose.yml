@@ -25,12 +25,10 @@ services:
 
     frontend:
         build:
-            context: docker/frontend
+            context: frontend
         image: frontend
         volumes:
-            - type: bind
-              source: ./frontend/
-              target: /react-app
+            - ./frontend/:/app
         ports:
             - "3000:3000"
 
