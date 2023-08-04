@@ -1,6 +1,6 @@
 import React, {FormEvent, useRef} from 'react';
-import axios from 'axios';
 import {Link} from "react-router-dom";
+import InvoiceService from "./services/InvoiceService";
 
 function CreateInvoice() {
 
@@ -9,10 +9,11 @@ function CreateInvoice() {
 
     const createInvoice = (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if (!clientInput.current || !amountInput.current) return;
 
-        axios.post('http://localhost/invoices', {
-            client: clientInput.current?.value,
-            amount: amountInput.current?.value
+        InvoiceService.create({
+            client: clientInput.current.value,
+            amount: amountInput.current.value
         }).then((response) => {
 
         }).catch((error) => {

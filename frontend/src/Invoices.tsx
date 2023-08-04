@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Link} from "react-router-dom";
-import axios from 'axios';
+import InvoiceService from "./services/InvoiceService";
 
 type Invoice = {
     id: number;
@@ -13,7 +13,7 @@ function Invoices() {
     const [invoices, setInvoices] = useState<Invoice[]>([]);
 
     const getInvoices = () => {
-        axios.get('http://localhost/invoices')
+        InvoiceService.getInvoices()
             .then((response) => {
                 setInvoices(response.data)
             }).catch((error) => {
