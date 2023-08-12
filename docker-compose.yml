@@ -23,6 +23,18 @@ services:
         ports:
             - "${DB_PORT:-5432}:5432"
 
+    postgresql-test:
+        image: postgres:15.3
+        container_name: awsdeveloper-test-db
+        environment:
+            POSTGRES_DB: "awsdeveloper_test"
+            POSTGRES_ROOT_PASSWORD: "secret"
+            POSTGRES_USER: "awsdevelopertest"
+            POSTGRES_PASSWORD: "secret"
+        ports:
+            - "5435:5435"
+        command: -p 5435
+
     frontend:
         build:
             context: frontend

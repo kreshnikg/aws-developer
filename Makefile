@@ -6,3 +6,6 @@ down: ## stop all containers
 
 bash: ## bash session on php container. useful to run tests and stuff
 	docker container exec -it aws-developer-php-1 bash
+
+test: ## bash session on php container. useful to run tests and stuff
+	docker container exec aws-developer-php-1 php vendor/bin/phpunit
