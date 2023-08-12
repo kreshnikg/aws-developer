@@ -34,6 +34,7 @@ services:
         ports:
             - "5435:5435"
         command: -p 5435
+        profiles: ["dev"]
 
     frontend:
         build:

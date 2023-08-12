@@ -32,6 +32,8 @@ class InvoiceControllerTest extends WebTestCase
             associative: true,
         );
 
+        $this->assertResponseIsSuccessful();
+
         $this->assertCount(1, $response);
         $this->assertEquals(99.99, $response[0]['amount']);
         $this->assertEquals('Test', $response[0]['client']);
@@ -53,5 +55,29 @@ class InvoiceControllerTest extends WebTestCase
         $this->assertNotNull($invoice);
         $this->assertEquals('Create Invoice', $invoice->getClient());
         $this->assertEquals(89.99, $invoice->getAmount());
+    }
+
+    public function testUpdateInvoice(): void
+    {
+        $invoice = new Invoice();
+        $invoice->setAmount(79.99);
+        $invoice->setClient('Invoice to update');
+        $this->invoiceRepository->save($invoice, true);
+
+        $this->client->xmlHttpRequest('PUT', '/invoices/'.$invoice->getId(), [], [], [], json_encode([
+            'client' => 'Updated Invoice',
+            'amount' => 69.99
+        ]));
+
+        $this->assertResponseIsSuccessful();
+
+        $response = json_decode(
+            json: $this->client->getResponse()->getContent(),
+            associative: true,
+        );
+
+        $updated_invoice = $this->invoiceRepository->find($invoice->getId());
+        $this->assertEquals('Updated Invoice', $updated_invoice->getClient());
+        $this->assertEquals(69.99, $updated_invoice->getAmount());
     }
 }
