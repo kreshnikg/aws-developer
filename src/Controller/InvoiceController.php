@@ -71,7 +71,7 @@ class InvoiceController extends AbstractController
 
         $s3 = new S3Client([
             'version' => 'latest',
-            'region'  => 'eu-west-1',
+            'region'  => $this->getParameter('aws_region'),
             'credentials' => [
                 'secret' => $this->getParameter('aws_secret_key'),
                 'key' => $this->getParameter('aws_access_key')
@@ -98,7 +98,7 @@ class InvoiceController extends AbstractController
 
         $sesClient = new SesClient([
             'version' => '2010-12-01',
-            'region'  => 'eu-west-1',
+            'region'  => $this->getParameter('aws_region'),
             'credentials' => [
                 'secret' => $this->getParameter('aws_secret_key'),
                 'key' => $this->getParameter('aws_access_key')
