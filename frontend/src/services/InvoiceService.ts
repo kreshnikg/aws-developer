@@ -18,6 +18,10 @@ class InvoiceService extends Service {
     download(id: number): AxiosPromise {
         return this.axiosInstance.get(`/invoices/${id}/download`);
     }
+
+    sendEmail(id: number): AxiosPromise {
+        return this.axiosInstance.post(`/invoices/${id}/send-email`);
+    }
 }
 
 export default new InvoiceService();

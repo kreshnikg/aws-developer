@@ -81,8 +81,8 @@ class InvoiceController extends AbstractController
             'version' => 'latest',
             'region'  => 'eu-west-1',
             'credentials' => [
-                'secret' => '',
-                'key' => ''
+                'secret' => $this->getParameter('aws_secret_key'),
+                'key' => $this->getParameter('aws_access_key')
             ]
         ]);
 
@@ -101,14 +101,43 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/invoices/{id}/send-email', methods: ['POST'])]
-    public function sendEmail(int $id, Request $request) {
+    public function sendEmail(int $id, Request $request): JsonResponse {
+        $invoice = $this->invoiceRepository->find($id);
+
         $sesClient = new SesClient([
             'version' => '2010-12-01',
-            'region'  => 'us-east-1',
+            'region'  => 'eu-west-1',
             'credentials' => [
-                'secret' => '',
-                'key' => ''
+                'secret' => $this->getParameter('aws_secret_key'),
+                'key' => $this->getParameter('aws_access_key')
             ]
         ]);
+
+        $message = [
+            'Subject' => [
+                'Data' => "Invoice #{$invoice->getId()}",
+                'Charset' => 'UTF-8'
+            ],
+            'Body' => [
+                'Html' => [
+                    'Data' => "<h1>Invoice {$invoice->getId()}</h1><br/><div>Client: {$invoice->getClient()}<br/>Amount: {$invoice->getAmount()}</div>",
+                    'Charset' => 'UTF-8'
+                ]
+            ]
+        ];
+
+        $destination = [
+            'ToAddresses' => [
+                ''
+            ]
+        ];
+
+        $result = $sesClient->sendEmail([
+            'Source' => '',
+            'Destination' => $destination,
+            'Message' => $message,
+        ]);
+
+        return new JsonResponse($result);
     }
 }
