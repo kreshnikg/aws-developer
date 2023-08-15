@@ -9,7 +9,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 use Dompdf\Dompdf;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
@@ -18,7 +17,6 @@ use Aws\Ses\SesClient;
 class InvoiceController extends AbstractController
 {
     public function __construct(
-        private readonly SerializerInterface $serializer,
         private readonly InvoiceRepository $invoiceRepository
     ) {
     }
@@ -28,9 +26,7 @@ class InvoiceController extends AbstractController
     {
         $invoices = $this->invoiceRepository->findAll();
 
-        $data = $this->serializer->serialize($invoices, 'json');
-
-        return new JsonResponse($data, json: true);
+        return $this->json($invoices);
     }
 
     #[Route('/invoices', methods: ['POST'])]
@@ -44,9 +40,7 @@ class InvoiceController extends AbstractController
 
         $this->invoiceRepository->save($invoice, true);
 
-        $data = $this->serializer->serialize($invoice, 'json');
-
-        return new JsonResponse($data, json: true);
+        return $this->json($invoice);
     }
 
     #[Route('/invoices/{id}', methods: ['PUT'])]
@@ -60,9 +54,7 @@ class InvoiceController extends AbstractController
 
         $this->invoiceRepository->save($invoice, true);
 
-        $data = $this->serializer->serialize($invoice, 'json');
-
-        return new JsonResponse($data, json: true);
+        return $this->json($invoice);
     }
 
     #[Route('/invoices/{id}/download', methods: ['GET'])]
@@ -94,9 +86,9 @@ class InvoiceController extends AbstractController
                 'ACL'    => 'public-read',
             ]);
 
-            return new JsonResponse($response->get('ObjectURL'));
+            return $this->json($response->get('ObjectURL'));
         } catch (S3Exception $e) {
-            return new JsonResponse("There was an error uploading the file.\n{$e->getMessage()}", 404);
+            return $this->json("There was an error uploading the file.\n{$e->getMessage()}", 404);
         }
     }
 
@@ -138,6 +130,6 @@ class InvoiceController extends AbstractController
             'Message' => $message,
         ]);
 
-        return new JsonResponse($result);
+        return $this->json($result);
     }
 }

@@ -3,6 +3,7 @@ import {BrowserRouter, Route, Routes} from "react-router-dom";
 import Invoices from "./Invoices";
 import CreateInvoice from "./CreateInvoice";
 import Layout from "./Layout";
+import Login from "./Login";
 
 function App() {
   return (
@@ -11,6 +12,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Invoices />}/>
                 <Route path="/create-invoice" element={<CreateInvoice />}/>
+                <Route path="/login" element={<Login />}/>
             </Routes>
         </Layout>
       </BrowserRouter>

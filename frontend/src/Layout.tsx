@@ -14,8 +14,8 @@ const Layout: React.FC<PropsWithChildren> = (props) => {
                         </ul>
 
                         <div className="text-end">
-                            <button type="button" className="btn btn-outline-light me-2">Login</button>
-                            <button type="button" className="btn btn-primary">Sign-up</button>
+                            <Link to={'/login'} className="btn btn-outline-light me-2">Sign in</Link>
+                            <button type="button" className="btn btn-primary">Sign up</button>
                         </div>
                     </div>
                 </div>
