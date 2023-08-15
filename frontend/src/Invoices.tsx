@@ -21,6 +21,15 @@ function Invoices() {
         });
     }
 
+    const download = (id: number) => {
+        InvoiceService.download(id)
+            .then((response) => {
+                window.open(response.data)
+            }).catch((error) => {
+
+        });
+    }
+
     useEffect(() => {
         getInvoices();
     }, [])
@@ -39,6 +48,7 @@ function Invoices() {
                     <th scope="col">#</th>
                     <th scope="col">Client</th>
                     <th scope="col">Amount</th>
+                    <th scope="col"/>
                 </tr>
                 </thead>
                 <tbody>
@@ -48,6 +58,9 @@ function Invoices() {
                             <th scope="row">{invoice.id}</th>
                             <td>{invoice.client}</td>
                             <td>{invoice.amount} E</td>
+                            <td>
+                                <a href="#" onClick={() => download(invoice.id)}>Download</a>
+                            </td>
                         </tr>
                     )
                 })}
