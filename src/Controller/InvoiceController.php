@@ -81,8 +81,8 @@ class InvoiceController extends AbstractController
             'version' => 'latest',
             'region'  => 'eu-west-1',
             'credentials' => [
-                'secret' => 'pdqasavYF8s39no2MU9Qdnkky1HcAwwLWsENXTnG',
-                'key' => 'AKIA4PXMZYYVI5BFHVLJ'
+                'secret' => '',
+                'key' => ''
             ]
         ]);
 
@@ -102,6 +102,13 @@ class InvoiceController extends AbstractController
 
     #[Route('/invoices/{id}/send-email', methods: ['POST'])]
     public function sendEmail(int $id, Request $request) {
-
+        $sesClient = new SesClient([
+            'version' => '2010-12-01',
+            'region'  => 'us-east-1',
+            'credentials' => [
+                'secret' => '',
+                'key' => ''
+            ]
+        ]);
     }
 }
