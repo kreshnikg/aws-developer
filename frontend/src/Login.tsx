@@ -16,7 +16,7 @@ const Login = () => {
             username: emailInput.current.value,
             password: passwordInput.current.value
         }).then(() => {
-
+            window.location.href = "/";
         }).catch(() => {
 
         });

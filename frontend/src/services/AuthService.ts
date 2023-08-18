@@ -1,5 +1,6 @@
 import Service from "./Service";
-import {AxiosPromise} from "axios";
+import {AxiosPromise, AxiosResponse} from "axios";
+import TokenManager from "../TokenManager";
 
 type LoginRequest = {
     username: string;
@@ -7,8 +8,14 @@ type LoginRequest = {
 }
 
 class AuthService extends Service {
-    login(data: LoginRequest): AxiosPromise {
-        return this.axiosInstance.post('/api/login_check', data);
+    login(data: LoginRequest): Promise<any> {
+        return this.axiosInstance.post('/api/login_check', data).then((response) => {
+            TokenManager.storeToken(response.data.token);
+        });
+    }
+
+    logout(): void {
+        TokenManager.clearToken();
     }
 }
 

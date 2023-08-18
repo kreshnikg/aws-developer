@@ -1,7 +1,15 @@
 import React, {PropsWithChildren} from 'react';
 import {Link} from "react-router-dom";
+import AuthService from "./services/AuthService";
+import TokenManager from "./TokenManager";
 
 const Layout: React.FC<PropsWithChildren> = (props) => {
+
+    const logout = () => {
+        AuthService.logout();
+        window.location.href = "/";
+    }
+
     return (
         <div>
             <header className="p-3 text-bg-dark mb-5">
@@ -14,8 +22,14 @@ const Layout: React.FC<PropsWithChildren> = (props) => {
                         </ul>
 
                         <div className="text-end">
-                            <Link to={'/login'} className="btn btn-outline-light me-2">Sign in</Link>
-                            <button type="button" className="btn btn-primary">Sign up</button>
+                        {TokenManager.getToken() === null ? (
+                            <>
+                                <Link to={'/login'} className="btn btn-outline-light me-2">Sign in</Link>
+                                <button type="button" className="btn btn-primary">Sign up</button>
+                            </>
+                        ): (
+                            <button type="button" onClick={logout} className="btn btn-outline-light">Sign out</button>
+                        )}
                         </div>
                     </div>
                 </div>

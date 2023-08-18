@@ -120,12 +120,12 @@ class InvoiceController extends AbstractController
 
         $destination = [
             'ToAddresses' => [
-                ''
+                'kreshnikg3@gmail.com'
             ]
         ];
 
         $result = $sesClient->sendEmail([
-            'Source' => '',
+            'Source' => 'kreshnikg3@gmail.com',
             'Destination' => $destination,
             'Message' => $message,
         ]);
