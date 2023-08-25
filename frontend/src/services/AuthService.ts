@@ -9,7 +9,7 @@ type LoginRequest = {
 
 class AuthService extends Service {
     login(data: LoginRequest): Promise<any> {
-        return this.axiosInstance.post('/api/login', data).then((response) => {
+        return this.axiosInstance.post('/login', data).then((response) => {
             TokenManager.storeToken(response.data.token);
         });
     }
