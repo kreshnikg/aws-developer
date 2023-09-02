@@ -39,6 +39,15 @@ function Invoices() {
         });
     }
 
+    const sendEmailAsync = (id: number) => {
+        InvoiceService.sendEmailAsync(id)
+            .then((response) => {
+
+            }).catch((error) => {
+
+        });
+    }
+
     useEffect(() => {
         getInvoices();
     }, [])
@@ -70,6 +79,7 @@ function Invoices() {
                             <td>
                                 <a href="#" onClick={() => download(invoice.id)}>Download</a>
                                 <a href="#" onClick={() => sendEmail(invoice.id)}> SendEmail</a>
+                                <a href="#" onClick={() => sendEmailAsync(invoice.id)}> SendEmailAsync</a>
                             </td>
                         </tr>
                     )

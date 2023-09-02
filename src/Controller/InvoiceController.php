@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Invoice;
 use App\Repository\InvoiceRepository;
+use Aws\Exception\AwsException;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -13,6 +14,7 @@ use Dompdf\Dompdf;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
 use Aws\Ses\SesClient;
+use Aws\Sqs\SqsClient;
 
 class InvoiceController extends AbstractController
 {
@@ -131,5 +133,35 @@ class InvoiceController extends AbstractController
         ]);
 
         return $this->json($result);
+    }
+
+    #[Route('/invoices/{id}/send-email-async', methods: ['POST'])]
+    public function sendEmailAsync(int $id, Request $request): JsonResponse {
+        $invoice = $this->invoiceRepository->find($id);
+
+        $client = new SqsClient([
+            'version' => '2012-11-05',
+            'region'  => $this->getParameter('aws_region'),
+            'credentials' => [
+                'secret' => $this->getParameter('aws_secret_key'),
+                'key' => $this->getParameter('aws_access_key')
+            ]
+        ]);
+
+        $params = [
+            'DelaySeconds' => 10,
+            'MessageBody' => json_encode(['invoiceId' => $invoice->getId()]),
+            'QueueUrl' => 'https://sqs.eu-west-1.amazonaws.com/858416334378/awsdeveloper-email-queue'
+        ];
+
+        try {
+            $result = $client->sendMessage($params);
+
+            return $this->json($result);
+        } catch (AwsException $e) {
+            error_log($e->getMessage());
+        }
+
+        return $this->json("success");
     }
 }

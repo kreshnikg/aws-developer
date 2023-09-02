@@ -22,6 +22,10 @@ class InvoiceService extends Service {
     sendEmail(id: number): AxiosPromise {
         return this.axiosInstance.post(`/invoices/${id}/send-email`);
     }
+
+    sendEmailAsync(id: number): AxiosPromise {
+        return this.axiosInstance.post(`/invoices/${id}/send-email-async`);
+    }
 }
 
 export default new InvoiceService();
