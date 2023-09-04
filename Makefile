@@ -9,3 +9,6 @@ bash: ## bash session on php container. useful to run tests and stuff
 
 test: ## bash session on php container. useful to run tests and stuff
 	docker container exec aws-developer-php-1 php vendor/bin/phpunit
+
+deploy:
+	serverless deploy --aws-profile=awsdeveloper
