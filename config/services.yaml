@@ -7,6 +7,7 @@ parameters:
     aws_access_key: '%env(AWS_ACCESS_KEY)%'
     aws_secret_key: '%env(AWS_SECRET_KEY)%'
     aws_region: 'eu-west-1'
+    sqs_email_queue_url: 'https://sqs.eu-west-1.amazonaws.com/858416334378/awsdeveloper-email-queue'
 
 services:
     # default configuration for services in *this* file
@@ -25,3 +26,15 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+    App\Service\SqsService:
+        arguments:
+            $aws_access_key: '%aws_access_key%'
+            $aws_secret_key: '%aws_secret_key%'
+            $aws_region: '%aws_region%'
+            $sqs_email_queue_url: '%sqs_email_queue_url%'
+
+    App\Service\SesService:
+        arguments:
+            $aws_access_key: '%aws_access_key%'
+            $aws_secret_key: '%aws_secret_key%'
+            $aws_region: '%aws_region%'

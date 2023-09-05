@@ -4,22 +4,24 @@ namespace App\Controller;
 
 use App\Entity\Invoice;
 use App\Repository\InvoiceRepository;
+use App\Service\EmailService;
+use App\Service\SqsService;
 use Aws\Exception\AwsException;
+use Aws\S3\Exception\S3Exception;
+use Aws\S3\S3Client;
+use Dompdf\Dompdf;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-use Dompdf\Dompdf;
-use Aws\S3\S3Client;
-use Aws\S3\Exception\S3Exception;
-use Aws\Ses\SesClient;
-use Aws\Sqs\SqsClient;
 
 class InvoiceController extends AbstractController
 {
     public function __construct(
-        private readonly InvoiceRepository $invoiceRepository
+        private readonly InvoiceRepository $invoiceRepository,
+        private readonly SqsService $sqsService,
+        private readonly EmailService $emailService,
     ) {
     }
 
@@ -98,39 +100,7 @@ class InvoiceController extends AbstractController
     public function sendEmail(int $id, Request $request): JsonResponse {
         $invoice = $this->invoiceRepository->find($id);
 
-        $sesClient = new SesClient([
-            'version' => '2010-12-01',
-            'region'  => $this->getParameter('aws_region'),
-            'credentials' => [
-                'secret' => $this->getParameter('aws_secret_key'),
-                'key' => $this->getParameter('aws_access_key')
-            ]
-        ]);
-
-        $message = [
-            'Subject' => [
-                'Data' => "Invoice #{$invoice->getId()}",
-                'Charset' => 'UTF-8'
-            ],
-            'Body' => [
-                'Html' => [
-                    'Data' => "<h1>Invoice {$invoice->getId()}</h1><br/><div>Client: {$invoice->getClient()}<br/>Amount: {$invoice->getAmount()}</div>",
-                    'Charset' => 'UTF-8'
-                ]
-            ]
-        ];
-
-        $destination = [
-            'ToAddresses' => [
-                'kreshnikg3@gmail.com'
-            ]
-        ];
-
-        $result = $sesClient->sendEmail([
-            'Source' => 'kreshnikg3@gmail.com',
-            'Destination' => $destination,
-            'Message' => $message,
-        ]);
+        $result = $this->emailService->sendInvoice($invoice);
 
         return $this->json($result);
     }
@@ -139,23 +109,8 @@ class InvoiceController extends AbstractController
     public function sendEmailAsync(int $id, Request $request): JsonResponse {
         $invoice = $this->invoiceRepository->find($id);
 
-        $client = new SqsClient([
-            'version' => '2012-11-05',
-            'region'  => $this->getParameter('aws_region'),
-            'credentials' => [
-                'secret' => $this->getParameter('aws_secret_key'),
-                'key' => $this->getParameter('aws_access_key')
-            ]
-        ]);
-
-        $params = [
-            'DelaySeconds' => 10,
-            'MessageBody' => json_encode(['invoiceId' => $invoice->getId()]),
-            'QueueUrl' => 'https://sqs.eu-west-1.amazonaws.com/858416334378/awsdeveloper-email-queue'
-        ];
-
         try {
-            $result = $client->sendMessage($params);
+            $result = $this->sqsService->sendMessage(json_encode(['invoiceId' => $invoice->getId()]));
 
             return $this->json($result);
         } catch (AwsException $e) {
