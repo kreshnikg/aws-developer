@@ -11,6 +11,15 @@ provider:
     environment:
         # Symfony environment variables
         APP_ENV: prod
+    iam:
+        role:
+            statements:
+                - Effect: Allow
+                  Action:
+                      - 'ec2:CreateNetworkInterface'
+                      - 'ec2:DescribeNetworkInterfaces'
+                      - 'ec2:DeleteNetworkInterface'
+                  Resource: '*'
 
 plugins:
     - ./vendor/bref/bref
@@ -25,6 +34,7 @@ functions:
                 arn: arn:aws:sqs:eu-west-1:858416334378:awsdeveloper-email-queue
                 batchSize: 1
                 functionResponseType: ReportBatchItemFailures
+        timeout: 20
 
 package:
     patterns:
