@@ -16,15 +16,15 @@ plugins:
     - ./vendor/bref/bref
 
 functions:
-    cron:
-        handler: bin/console # or 'artisan' for Laravel
+    worker:
+        handler: public/worker.php
         layers:
             - ${bref:layer.php-82} # PHP
-            - ${bref:layer.console} # The "console" layer
         events:
-            - schedule:
-                rate: rate(1 minute)
-                input: '"app:send-emails"'
+            - sqs:
+                arn: arn:aws:sqs:eu-west-1:858416334378:awsdeveloper-email-queue
+                batchSize: 1
+                functionResponseType: ReportBatchItemFailures
 
 package:
     patterns:
