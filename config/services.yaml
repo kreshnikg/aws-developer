@@ -7,7 +7,7 @@ parameters:
     aws_access_key: '%env(AWS_ACCESS_KEY)%'
     aws_secret_key: '%env(AWS_SECRET_KEY)%'
     aws_region: 'eu-west-1'
-    sqs_email_queue_url: 'https://sqs.eu-west-1.amazonaws.com/858416334378/awsdeveloper-email-queue'
+    sqs_email_queue_url: 'https://sqs.eu-west-1.amazonaws.com/333636707942/awsdeveloper-email-queue'
 
 services:
     # default configuration for services in *this* file

@@ -3,9 +3,7 @@ service: symfony
 
 provider:
     name: aws
-    # The AWS region in which to deploy (us-east-1 is the default)
     region: eu-west-1
-    # The stage of the application, e.g. dev, production, staging… ('dev' is the default)
     stage: dev
     runtime: provided.al2
     environment:
@@ -16,9 +14,8 @@ provider:
             statements:
                 - Effect: Allow
                   Action:
-                      - 'ec2:CreateNetworkInterface'
-                      - 'ec2:DescribeNetworkInterfaces'
-                      - 'ec2:DeleteNetworkInterface'
+                    - 'ses:SendEmail',
+                    - 'ses:SendRawEmail'
                   Resource: '*'
 
 plugins:
@@ -31,10 +28,18 @@ functions:
             - ${bref:layer.php-82} # PHP
         events:
             - sqs:
-                arn: arn:aws:sqs:eu-west-1:858416334378:awsdeveloper-email-queue
+                arn: arn:aws:sqs:eu-west-1:333636707942:awsdeveloper-email-queue
                 batchSize: 1
                 functionResponseType: ReportBatchItemFailures
-        timeout: 20
+        timeout: 15
+        vpc:
+            securityGroupIds:
+                - sg-08bbf62c30d4e1b21 # default
+                - sg-0f069e8c2ce8c8efe # lambda-rds-1
+            subnetIds:
+                - subnet-07f3d33876f164ad3 # eu-west-1a
+                - subnet-064b7ff99b60bf563 # eu-west-1b
+                - subnet-04ffa11570295f83d # eu-west-1c
 
 package:
     patterns:
