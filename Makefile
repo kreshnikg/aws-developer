@@ -1,8 +1,8 @@
 up: ## start all containers
-	docker-compose up -d
+	docker-compose --profile dev up -d
 
 down: ## stop all containers
-	docker-compose down
+	docker-compose --profile dev down
 
 bash: ## bash session on php container. useful to run tests and stuff
 	docker container exec -it aws-developer-php-1 bash

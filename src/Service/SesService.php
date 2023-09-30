@@ -20,12 +20,13 @@ class SesService
             'credentials' => [
                 'secret' => $aws_secret_key,
                 'key' => $aws_access_key,
-            ]
+            ],
         ]);
     }
 
     public function sendEmail(string $source, array $destination, array $message): Result
     {
+        echo "Sending email\n";
         return $this->client->sendEmail([
             'Source' => $source,
             'Destination' => $destination,

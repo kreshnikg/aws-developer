@@ -8,7 +8,7 @@ use Aws\Result;
 class EmailService
 {
     public function __construct(
-        private readonly SesService $sesService
+        private readonly SesService $sesService,
     ) {
     }
 
@@ -31,6 +31,9 @@ class EmailService
                 'kreshnikg3@gmail.com'
             ]
         ];
+
+        echo "Message: " . json_encode($message) . "\n";
+        echo "Destination: " . json_encode($destination) . "\n";
 
         return $this->sesService->sendEmail(
             'kreshnikg3@gmail.com',

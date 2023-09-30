@@ -14,7 +14,7 @@ provider:
             statements:
                 - Effect: Allow
                   Action:
-                    - 'ses:SendEmail',
+                    - 'ses:SendEmail'
                     - 'ses:SendRawEmail'
                   Resource: '*'
 
@@ -32,14 +32,6 @@ functions:
                 batchSize: 1
                 functionResponseType: ReportBatchItemFailures
         timeout: 15
-        vpc:
-            securityGroupIds:
-                - sg-08bbf62c30d4e1b21 # default
-                - sg-0f069e8c2ce8c8efe # lambda-rds-1
-            subnetIds:
-                - subnet-07f3d33876f164ad3 # eu-west-1a
-                - subnet-064b7ff99b60bf563 # eu-west-1b
-                - subnet-04ffa11570295f83d # eu-west-1c
 
 package:
     patterns:
