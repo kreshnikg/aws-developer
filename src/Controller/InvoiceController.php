@@ -10,6 +10,7 @@ use Aws\Exception\AwsException;
 use Aws\S3\Exception\S3Exception;
 use Aws\S3\S3Client;
 use Dompdf\Dompdf;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -22,12 +23,15 @@ class InvoiceController extends AbstractController
         private readonly InvoiceRepository $invoiceRepository,
         private readonly SqsService $sqsService,
         private readonly EmailService $emailService,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
     #[Route('/invoices', methods: ['GET'])]
     public function index(): Response
     {
+        $this->logger->error("Invoices");
+
         $invoices = $this->invoiceRepository->findAll();
 
         return $this->json($invoices);
