@@ -88,7 +88,7 @@ class InvoiceController extends AbstractController
 
         try {
             $response = $s3->putObject([
-                'Bucket' => 'awsdeveloper-01',
+                'Bucket' => 'awsdeveloper-invoices',
                 'Key'    => "invoice-{$invoice->getId()}.pdf",
                 'Body'   => file_get_contents(stream_get_meta_data($temp)['uri']),
                 'ACL'    => 'public-read',

@@ -28,3 +28,7 @@
 ###> bref/symfony-bridge ###
 /.serverless/
 ###< bref/symfony-bridge ###
+
+.terraform/
+terraform.tfstate
+terraform.tfstate.backup
