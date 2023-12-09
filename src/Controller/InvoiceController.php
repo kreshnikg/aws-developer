@@ -6,9 +6,10 @@ use App\Entity\Invoice;
 use App\Repository\InvoiceRepository;
 use App\Service\EmailService;
 use App\Service\SqsService;
-use Aws\Exception\AwsException;
-use Aws\S3\Exception\S3Exception;
+use Aws\DynamoDb\DynamoDbClient;
 use Aws\S3\S3Client;
+use Aws\S3\Exception\S3Exception;
+use Aws\Exception\AwsException;
 use Dompdf\Dompdf;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -16,6 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
 
 class InvoiceController extends AbstractController
 {
@@ -38,15 +40,34 @@ class InvoiceController extends AbstractController
     }
 
     #[Route('/invoices', methods: ['POST'])]
-    public function save(Request $request): JsonResponse
+    public function save(Request $request): JsonResponse|array
     {
         $data = $request->toArray();
 
         $invoice = new Invoice();
         $invoice->setClient($data['client']);
         $invoice->setAmount($data['amount']);
-
         $this->invoiceRepository->save($invoice, true);
+
+        $client = new DynamoDbClient([
+            'version' => 'latest',
+            'region'  => $this->getParameter('aws_region'),
+            'credentials' => [
+                'secret' => $this->getParameter('aws_secret_key'),
+                'key' => $this->getParameter('aws_access_key')
+            ]
+        ]);
+        foreach ($data['items'] as $item) {
+            $client->putItem([
+                'TableName' => 'awsdeveloper-invoice-items',
+                'Item' => [
+                    'InvoiceId' => ['N' => (string) $invoice->getId()],
+                    'Title' => ['S' => (string) $item['title']],
+                    'Price' => ['S' => (string) $item['price']],
+                    'Quantity' => ['S' => (string) $item['quantity']],
+                ]
+            ]);
+        }
 
         return $this->json($invoice);
     }

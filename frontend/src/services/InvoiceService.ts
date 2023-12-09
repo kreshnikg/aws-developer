@@ -1,9 +1,16 @@
 import Service from "./Service";
 import {AxiosPromise} from "axios";
 
-type InvoiceRequest = {
+export type Item = {
+    title: string;
+    price: string;
+    quantity: string;
+}
+
+export type InvoiceRequest = {
     client: string;
     amount: string;
+    items: Item[];
 }
 
 class InvoiceService extends Service {

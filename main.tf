@@ -62,7 +62,7 @@ resource "aws_security_group" "webserver_sg" {
     }
 }
 
-## EC2 Instance
+#region EC2 Instance
 resource "aws_instance" "app_server" {
     ami           = "ami-0be5a2a64756744f8"
     instance_type = "t4g.small"
@@ -73,9 +73,9 @@ resource "aws_instance" "app_server" {
         Name = "webserver"
     }
 }
+#endregion
 
-
-## S3 Bucket
+#region S3 Bucket
 resource "aws_s3_bucket" "s3_awsdeveloper_invoices_bucket" {
     bucket = "awsdeveloper-invoices"
 }
@@ -105,3 +105,25 @@ resource "aws_s3_bucket_acl" "s3_awsdeveloper_invoices_bucket_acl" {
     bucket = aws_s3_bucket.s3_awsdeveloper_invoices_bucket.id
     acl = "public-read"
 }
+#endregion
+
+#region DynamoDB
+resource "aws_dynamodb_table" "dynamodb_awsdeveloper_invoice_items_table" {
+    name = "awsdeveloper-invoice-items"
+    billing_mode = "PROVISIONED"
+    read_capacity = 5
+    write_capacity = 5
+    hash_key = "InvoiceId"
+    range_key = "Title"
+
+    attribute {
+        name = "InvoiceId"
+        type = "N"
+    }
+
+    attribute {
+        name = "Title"
+        type = "S"
+    }
+}
+#endregion
