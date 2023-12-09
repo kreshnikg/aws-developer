@@ -144,4 +144,14 @@ class InvoiceController extends AbstractController
 
         return $this->json("success");
     }
+
+    #[Route('/invoices/{id}', methods: ['DELETE'])]
+    public function delete(int $id): JsonResponse
+    {
+        $invoice = $this->invoiceRepository->find($id);
+
+        $this->invoiceRepository->remove($invoice, true);
+
+        return $this->json("success");
+    }
 }
