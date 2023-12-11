@@ -1,12 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Link} from "react-router-dom";
-import InvoiceService from "./services/InvoiceService";
-
-type Invoice = {
-    id: number;
-    client: string;
-    amount: string;
-}
+import InvoiceService, {Invoice} from "./services/InvoiceService";
 
 function Invoices() {
 
@@ -77,6 +71,7 @@ function Invoices() {
                             <td>{invoice.client}</td>
                             <td>{invoice.amount} E</td>
                             <td>
+                                <Link to={`/invoices/${invoice.id}`}>Edit </Link>
                                 <a href="#" onClick={() => download(invoice.id)}>Download</a>
                                 <a href="#" onClick={() => sendEmail(invoice.id)}> SendEmail</a>
                                 <a href="#" onClick={() => sendEmailAsync(invoice.id)}> SendEmailAsync</a>

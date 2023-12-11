@@ -20,6 +20,8 @@ class Invoice
     #[ORM\Column(type: Types::DECIMAL, precision: 10, scale: 2, nullable: true)]
     private ?string $amount = null;
 
+    private ?array $items = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -45,6 +47,18 @@ class Invoice
     public function setAmount(?string $amount): static
     {
         $this->amount = $amount;
+
+        return $this;
+    }
+
+    public function getItems(): ?array
+    {
+        return $this->items;
+    }
+
+    public function setItems(?array $items): static
+    {
+        $this->items = $items;
 
         return $this;
     }

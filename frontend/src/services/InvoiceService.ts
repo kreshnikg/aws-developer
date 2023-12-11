@@ -7,6 +7,13 @@ export type Item = {
     quantity: string;
 }
 
+export type Invoice = {
+    id: number;
+    client: string;
+    amount: string;
+    items: Item[];
+}
+
 export type InvoiceRequest = {
     client: string;
     amount: string;
@@ -20,6 +27,14 @@ class InvoiceService extends Service {
 
     create(data: InvoiceRequest): AxiosPromise {
         return this.axiosInstance.post('/invoices', data)
+    }
+
+    update(id: number, data: InvoiceRequest): AxiosPromise {
+        return this.axiosInstance.put(`/invoices/${id}`, data)
+    }
+
+    getInvoice(id: string): AxiosPromise {
+        return this.axiosInstance.get(`/invoices/${id}`);
     }
 
     download(id: number): AxiosPromise {

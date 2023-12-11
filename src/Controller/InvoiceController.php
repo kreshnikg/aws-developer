@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Invoice;
+use App\Repository\InvoiceItemRepository;
 use App\Repository\InvoiceRepository;
 use App\Service\EmailService;
 use App\Service\SqsService;
@@ -26,6 +27,7 @@ class InvoiceController extends AbstractController
         private readonly SqsService $sqsService,
         private readonly EmailService $emailService,
         private readonly LoggerInterface $logger,
+        private readonly InvoiceItemRepository $invoiceItemRepository,
     ) {
     }
 
@@ -49,25 +51,21 @@ class InvoiceController extends AbstractController
         $invoice->setAmount($data['amount']);
         $this->invoiceRepository->save($invoice, true);
 
-        $client = new DynamoDbClient([
-            'version' => 'latest',
-            'region'  => $this->getParameter('aws_region'),
-            'credentials' => [
-                'secret' => $this->getParameter('aws_secret_key'),
-                'key' => $this->getParameter('aws_access_key')
-            ]
-        ]);
-        foreach ($data['items'] as $item) {
-            $client->putItem([
-                'TableName' => 'awsdeveloper-invoice-items',
-                'Item' => [
-                    'InvoiceId' => ['N' => (string) $invoice->getId()],
-                    'Title' => ['S' => (string) $item['title']],
-                    'Price' => ['S' => (string) $item['price']],
-                    'Quantity' => ['S' => (string) $item['quantity']],
-                ]
-            ]);
+        if (count($data['items']) > 0) {
+            $this->invoiceItemRepository->saveItemsWithInvoiceId($data['items'], $invoice->getId());
         }
+
+        return $this->json($invoice);
+    }
+
+    #[Route('/invoices/{id}', methods: ['GET'])]
+    public function getInvoice(int $id): JsonResponse
+    {
+        $invoice = $this->invoiceRepository->find($id);
+
+        $items = $this->invoiceItemRepository->getItemsByInvoiceId($id);
+
+        $invoice->setItems($items);
 
         return $this->json($invoice);
     }
@@ -80,6 +78,16 @@ class InvoiceController extends AbstractController
         $invoice = $this->invoiceRepository->find($id);
         $invoice->setClient($data['client']);
         $invoice->setAmount($data['amount']);
+
+        $items = $this->invoiceItemRepository->getItemsByInvoiceId($id);
+
+        if (count($items) > 0) {
+            $this->invoiceItemRepository->deleteItemsWithInvoiceId($items, $id);
+        }
+
+        if (count($data['items']) > 0) {
+            $this->invoiceItemRepository->saveItemsWithInvoiceId($data['items'], $id);
+        }
 
         $this->invoiceRepository->save($invoice, true);
 

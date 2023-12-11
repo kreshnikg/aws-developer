@@ -4,6 +4,7 @@ import Invoices from "./Invoices";
 import CreateInvoice from "./CreateInvoice";
 import Layout from "./Layout";
 import Login from "./Login";
+import EditInvoice from "./EditInvoice";
 
 function App() {
   return (
@@ -12,6 +13,7 @@ function App() {
             <Routes>
                 <Route path="/" element={<Invoices />}/>
                 <Route path="/create-invoice" element={<CreateInvoice />}/>
+                <Route path="/invoices/:id" element={<EditInvoice />}/>
                 <Route path="/login" element={<Login />}/>
             </Routes>
         </Layout>
